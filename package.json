@@ -1,7 +1,6 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -21,5 +20,6 @@
     "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4",
     "otp-generator": "^4.0.1"
-  }
+  },
+  "description": ""
 }
