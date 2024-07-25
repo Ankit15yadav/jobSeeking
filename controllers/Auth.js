@@ -3,6 +3,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const profile = require("../models/Profile");
 require("dotenv").config();
+const mailSender = require("../utils/mailSender");
 
 
 //sign up controller
