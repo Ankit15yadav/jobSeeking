@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const profile = require("../models/Profile");
 require("dotenv").config();
 const mailSender = require("../utils/mailSender");
+const OTP = require("../models/OTP");
+const Profile = require("../models/Profile");
 
 
 //sign up controller
@@ -12,12 +14,12 @@ exports.signup = async (req, res) => {
 
         const { firstName, lastName,
             email, password, confirmPassword,
-            accountType, phoneNumber, otp,
+            role, phoneNumber, otp,
         } = req.body;
 
         //validation
         if (!firstName || !lastName ||
-            !email || !password || !confirmPassword || !accountType
+            !email || !password || !confirmPassword || !role
             || !phoneNumber || !otp
         ) {
             return res.status(403).json({
@@ -43,7 +45,44 @@ exports.signup = async (req, res) => {
         }
 
         //find the most recent otp from the database
+        const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+        console.log(response);
 
+        if (response.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "The otp is not valid",
+            });
+        }
+        else if (otp !== response[0].otp) {
+            //otp valid ni h
+            return res.status(400).json({
+                success: false,
+                message: "the otp is not valid",
+            })
+        }
+
+        //hashing password before storing it
+        const hashedPassword = await bcrypt.hash(password, 10);;
+
+        //personal details ko default null set kr dia hai baadme change kr skte hai as per our need
+        const profiledetails = await Profile.create({
+            gender: null,
+            dateOfBirth: null,
+            about: null,
+            phoneNumber: null,
+        })
+
+        const user = await User.create({
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            password: hashedPassword,
+            role: role,
+            additonalDetails: profiledetails._id,
+            image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`
+        })
 
     } catch (err) {
 
