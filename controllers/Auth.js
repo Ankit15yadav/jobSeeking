@@ -1,7 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const profile = require("../models/Profile");
 require("dotenv").config();
 const mailSender = require("../utils/mailSender");
 const OTP = require("../models/OTP");
@@ -51,7 +50,7 @@ exports.signup = async (req, res) => {
         if (response.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: "The otp is not valid",
+                message: "The otp is not present",
             });
         }
         else if (otp !== response[0].otp) {
@@ -84,7 +83,83 @@ exports.signup = async (req, res) => {
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`
         })
 
+        return res.status(200).json({
+            success: true,
+            user,
+            message: "User registered successfully",
+        })
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "user cannot be registered . please try again",
+        })
+    }
+}
+
+exports.login = async (req, res) => {
+
+    try {
+
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Please fill up all the required fields",
+            });
+        }
+
+        const user = await User.findOne({ email }).populate("additonalDetails");
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "user is not registerd with us please sing up to continue"
+            })
+        }
+
+        //hum token create krenge using jwt.sign
+        // jwt sign mai payload secretkry aur options pass krne hote hai
+        // direct function mai b pass kr skte aur object bna kr b kr skte hai
+        if (await bcrypt.compare(password, user.password)) {
+            const token = jwt.sign(
+                { email: user.email, id: user._id, role: user.role },
+                process.env.JWT_SECRET,
+                {
+                    expiresIn: "48h",
+                }
+            );
+
+            user.token = token;
+            user.password = undefined;
+
+            const options = {
+                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                httpOnly: true,
+            }
+
+            res.cookie("token", token, options).status(200).json({
+                success: true,
+                token,
+                user,
+                message: "User login successfully",
+            });
+        }
+        else {
+            return res.status(401).json({
+                success: false,
+                message: "Password is incorrect",
+            })
+        }
+
     } catch (err) {
 
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Login failure please try again",
+        })
     }
 }
