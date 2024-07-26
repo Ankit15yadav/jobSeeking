@@ -13,8 +13,8 @@ const otpSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Data.now(),
-        expires: 60 * 5 //5 min ka time hai apne aap delte ho jaega us k baad
+        default: Date.now(),
+        expires: 60 * 5, //5 min ka time hai apne aap delte ho jaega us k baad
     }
 
 })
@@ -41,6 +41,7 @@ async function sendVerificationEmail(email, otp) {
 otpSchema.pre("save", async function (next) {
 
     if (this.isNew) {
+        // jb b koi new data add ho database mai email send kr do
         await sendVerificationEmail(this.email, this.otp);
     }
 

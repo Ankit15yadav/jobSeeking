@@ -12,7 +12,7 @@ const profileSchema = new mongoose.Schema({
         type: String,
     },
     phoneNumber: {
-        type: string,
+        type: String,
         trim: true,
     },
 

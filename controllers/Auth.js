@@ -5,6 +5,7 @@ require("dotenv").config();
 const mailSender = require("../utils/mailSender");
 const OTP = require("../models/OTP");
 const Profile = require("../models/Profile");
+const otpGenerator = require("otp-generator");
 
 
 //sign up controller
@@ -39,7 +40,7 @@ exports.signup = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: "User already exist .please sing in to continue",
+                message: "User already exist .please login to continue",
             })
         }
 
@@ -116,7 +117,7 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "user is not registerd with us please sing up to continue"
+                message: "user is not registerd with us please sing up to continue!!1"
             })
         }
 
@@ -161,5 +162,56 @@ exports.login = async (req, res) => {
             success: false,
             message: "Login failure please try again",
         })
+    }
+}
+
+exports.sendotp = async (req, res) => {
+    try {
+        const { email } = req.body;
+        //user present hai ya nhi
+
+        const userPresent = await User.findOne({ email });
+
+        if (userPresent) {
+            return res.status(401).json({
+                success: false,
+                message: "user Already registered",
+            })
+        }
+
+        var otp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+        });
+
+        const result = await OTP.findOne({ otp: otp });
+        console.log("result is generated");
+        console.log("OTP", otp);
+        console.log("result", result);
+        while (result) {
+            otp = otpGenerator.generate(6, {
+                upperCaseAlphabets: false,
+            })
+        }
+
+        const otpPayload = { email, otp };
+        const otpBody = await OTP.create(otpPayload);
+
+        console.log("otp body", otpBody);
+        return res.status(200).json({
+            success: true,
+            message: "otp sent successfully",
+            otp,
+        })
+
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).json(
+            {
+                success: false,
+                error: err.message,
+            }
+        )
     }
 }
