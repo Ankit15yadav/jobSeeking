@@ -41,12 +41,17 @@ const jobsSchema = new mongoose.Schema({
 
     typeOfJob: {
         type: String,
-        enum: ["full time", "part time", "remote", "internship"]
+        enum: ["fullTime", "partTime", "remote", "internship"]
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-    }
+    },
+    applications:
+    [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Application"
+    }],
 
 });
 

@@ -8,11 +8,11 @@ const applicationSchema = new mongoose.Schema({
         required: true,
     },
 
-    user: {
+    users: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
-    },
+    }],
     resume: {
         type: String,
         required: true, // Ensures that the application has a resume
@@ -28,6 +28,7 @@ const applicationSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["Pending", "Reviewed", "ShortListed", "Rejected"],
+        default: "Pending",
         required: true,
     },
     company: {

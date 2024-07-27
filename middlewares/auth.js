@@ -43,7 +43,7 @@ exports.auth = async (req, res, next) => {
 exports.isEmployer = async (req, res, next) => {
     try {
 
-        if (req.user.accountType !== "Employer") {
+        if (req.user.role !== "Employer") {
             return res.status(401).json({
                 success: false,
                 message: "this is a protected route for employer only",
@@ -63,7 +63,7 @@ exports.isEmployer = async (req, res, next) => {
 exports.isJobSeeker = async (req, res, next) => {
     try {
 
-        if (req.user.accountType !== "JobSeeker") {
+        if (req.user.role !== "JobSeeker") {
             return res.status(401).json({
                 success: false,
                 message: "this is a protected route for jobSeeker only",
@@ -80,10 +80,10 @@ exports.isJobSeeker = async (req, res, next) => {
 }
 
 //admin
-exports.isEmployer = async (req, res, next) => {
+exports.isAdmin = async (req, res, next) => {
     try {
 
-        if (req.user.accountType !== "Admin") {
+        if (req.user.role !== "Admin") {
             return res.status(401).json({
                 success: false,
                 message: "this is a protected route for Admin only",

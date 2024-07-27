@@ -1,8 +1,8 @@
-const { mongo, default: mongoose } = require("mongoose");
+const { default: mongoose } = require("mongoose");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 const jobs = require("../models/Jobs");
-const Selected = require("../models/Selected");
+// const Selected = require("../models/Selected");
 
 exports.updateProfile = async (req, res) => {
     try {
@@ -74,6 +74,7 @@ exports.deleteAccount = async (req, res) => {
                 message: "user not found",
             })
         }
+        console.log(user);
 
         await Profile.findByIdAndDelete({
             _id: new mongoose.Types.ObjectId(user.additonalDetails),
