@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
     createCompany,
-    deleteCompany
+    deleteCompany,
+    updateCompany
 } = require("../controllers/Company");
 
 const {
@@ -12,5 +13,6 @@ const {
 
 router.post("/createCompany", auth, isEmployer, createCompany);
 router.delete("/deleteCompany", auth, isEmployer, deleteCompany);
+router.post("/updateCompany", auth, isEmployer, updateCompany);
 
 module.exports = router;

@@ -90,3 +90,59 @@ exports.deleteCompany = async (req, res) => {
         })
     }
 }
+
+exports.updateCompany = async (req, res) => {
+    try {
+
+        // company id ko form data mai bhi bhej skta hu 
+        const { companyId } = req.body;
+
+        if (!companyId) {
+            return res.status(400).json({
+                success: false,
+                message: "id not found",
+            })
+        }
+
+        let { name, description, location, industry, website } = req.body;
+
+        if (!name || !description || !location || !industry || !website) {
+            return res.status(400).json({
+                success: false,
+                message: "all fields are required",
+            })
+        }
+
+        const newCompany = await Company.findByIdAndUpdate({ _id: companyId },
+            {
+                $set: {
+                    name,
+                    description,
+                    location,
+                    industry,
+                    website,
+                }
+            },
+            { new: true },
+        )
+        if (!newCompany) {
+            return res.status(404).json({
+                success: false,
+                message: "company not found",
+            })
+        }
+
+        console.log(newCompany);
+
+        return res.status(200).json({
+            success: true,
+            message: "company updated successfully",
+        })
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "error in updating company",
+        })
+    }
+}
