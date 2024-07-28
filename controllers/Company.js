@@ -1,6 +1,7 @@
 const Company = require("../models/Company");
-const User = require("../models/User")
-
+const User = require("../models/User");
+const { uploadImageToCloud } = require("../utils/imageUpload");
+require("dotenv").config();
 
 exports.createCompany = async (req, res) => {
     try {
@@ -16,10 +17,10 @@ exports.createCompany = async (req, res) => {
             name, description, location, industry, website
         } = req.body;
 
-        const logo = req.files.thumbnail;
+        const logo = req.files.companyLogo;
 
-        //neeche logo bhi include krna hai validation k lie
-        if (!name || !description || !location || !industry || !website) {
+
+        if (!name || !description || !location || !industry || !website || !logo) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required to create a company on this website",
@@ -27,14 +28,29 @@ exports.createCompany = async (req, res) => {
         }
 
         //cloud pr image upload krna hai thumbnail ka
+        const uploadImg = await uploadImageToCloud(
+            logo,
+            process.env.FOLDER_NAME
+        )
+
+        console.log("image uploaded", uploadImg.secure_url);
+
+        console.log("website name ", website);
+
         const newcompany = await Company.create({
             name,
             description,
             location,
             industry,
             website,
+            CompanyLogo: uploadImg.secure_url,
         })
 
+        return res.status(200).json({
+            success: true,
+            message: "company created successfully",
+            newcompany,
+        })
 
     } catch (err) {
         console.log(err);
@@ -43,5 +59,34 @@ exports.createCompany = async (req, res) => {
             message: "Company cannot be created"
         })
 
+    }
+}
+
+exports.deleteCompany = async (req, res) => {
+    try {
+
+        // baadme parameters se le lunga iski id
+        const { companyId } = req.body;
+
+        if (!companyId) {
+            return res.status(400).json({
+                success: false,
+                message: "compnay id not found",
+            })
+        }
+
+        await Company.findByIdAndDelete(companyId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Company deleted successfully",
+        })
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            success: false,
+            message: "Company cannot be deleted "
+        })
     }
 }

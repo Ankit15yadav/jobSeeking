@@ -8,20 +8,30 @@ const companySchema = new mongoose.Schema({
     },
     description: {
         type: String,
+        required: true,
     },
     location: {
         type: String,
+        required: true,
     },
     industry: {
         type: String,
+        required: true,
     },
     website: {
         type: String,
         //url of the web site
+        required: true,
     },
-    logo: {
+    CompanyLogo: {
         type: String,
         required: true,
+        validate: {
+            validator: function (v) {
+                return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(v);
+            },
+            message: props => `${props.value} is not a valid URL!`
+        }
     },
     jobsCreated: [
         {
