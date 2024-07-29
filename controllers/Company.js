@@ -10,8 +10,9 @@ exports.createCompany = async (req, res) => {
         if (!userId) {
             return res.status(400).json({
                 success: false,
-                message: "user not found",
+                message: "company user not found",
             })
+
         }
         let {
             name, description, location, industry, website
