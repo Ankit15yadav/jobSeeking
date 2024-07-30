@@ -2,17 +2,21 @@ const mongoose = require("mongoose");
 
 const applicationSchema = new mongoose.Schema({
 
+    name: {
+        type: String,
+        required: true,
+    },
     job: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Jobs",
         required: true,
     },
 
-    users: [{
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
-    }],
+    },
     resume: {
         type: String,
         required: true, // Ensures that the application has a resume

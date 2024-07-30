@@ -207,6 +207,4 @@ exports.deleteJob = async (req, res) => {
             }
         )
     }
-
-
 }
