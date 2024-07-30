@@ -8,7 +8,9 @@ const {
 } = require("../controllers/Company");
 
 const {
-    createJob
+    createJob,
+    updateJob,
+    deleteJob
 } = require("../controllers/Jobs");
 
 const {
@@ -19,5 +21,7 @@ router.post("/createCompany", auth, isEmployer, createCompany);
 router.delete("/deleteCompany", auth, isEmployer, deleteCompany);
 router.post("/updateCompany", auth, isEmployer, updateCompany);
 router.post("/createJob", auth, isEmployer, createJob);
+router.post("/updateJob", auth, isEmployer, updateJob);
+router.delete("/deleteJob", auth, isEmployer, deleteJob);
 
 module.exports = router;
